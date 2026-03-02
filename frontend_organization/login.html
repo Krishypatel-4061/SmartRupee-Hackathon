@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartRupee | Org Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            base: '#08051A',
+                            surface: '#13102B',
+                            primary: '#2563EB', // Org Blue
+                            danger: '#EF4444',
+                            success: '#10B981',
+                            textBase: '#FFFFFF',
+                            textMuted: '#94A3B8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glow-org {
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+        }
+    </style>
+</head>
+
+<body class="bg-brand-base flex items-center justify-center min-h-screen text-brand-textBase p-4 antialiased">
+
+    <div class="relative w-full max-w-md">
+        <!-- Ambient Background Glow -->
+        <div
+            class="absolute -top-20 -left-20 w-72 h-72 bg-brand-primary/20 rounded-full blur-[100px] pointer-events-none z-0">
+        </div>
+        <div
+            class="absolute -bottom-20 -right-20 w-72 h-72 bg-brand-primary/10 rounded-full blur-[100px] pointer-events-none z-0">
+        </div>
+
+        <!-- Login Card -->
+        <main
+            class="relative z-10 bg-brand-surface border border-white/10 rounded-3xl p-10 shadow-2xl backdrop-blur-xl">
+            <div class="text-center mb-8">
+                <div
+                    class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-primary/10 border border-brand-primary/20 mb-6 glow-org">
+                    <span class="material-symbols-outlined text-4xl text-brand-primary font-bold">corporate_fare</span>
+                </div>
+                <h1 class="text-3xl font-black tracking-tight mb-2">Admin Portal</h1>
+                <p class="text-brand-textMuted text-sm font-medium">Sign in to manage and distribute SmartRupee funds.
+                </p>
+            </div>
+
+            <form id="login-form" class="space-y-6">
+                <!-- Identifier -->
+                <div>
+                    <label
+                        class="block text-brand-textMuted text-xs font-bold uppercase tracking-wider mb-2 ml-1">Organization
+                        ID</label>
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-brand-textMuted">account_circle</span>
+                        <input id="login-identifier" type="text" required placeholder="Enter Org Name or Email"
+                            class="w-full bg-black/30 border border-white/10 text-white rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label
+                        class="block text-brand-textMuted text-xs font-bold uppercase tracking-wider mb-2 ml-1">Password</label>
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-brand-textMuted">lock</span>
+                        <input id="login-password" type="password" required placeholder="••••••••"
+                            class="w-full bg-black/30 border border-white/10 text-white rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all">
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="login-error"
+                    class="hidden bg-brand-danger/10 border border-brand-danger/20 text-brand-danger text-sm p-3 rounded-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <p>Invalid credentials. Please try again.</p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-bold py-4 rounded-xl transition-all glow-org flex justify-center items-center gap-2">
+                    <span>Secure Sign In</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-white/10 text-center text-xs text-brand-textMuted font-medium">
+                <p>SmartRupee CBDC Network</p>
+                <div class="flex items-center justify-center gap-1 mt-1 text-[10px] text-brand-success/70">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-success opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-success"></span>
+                    </span>
+                    Systems Operational
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('login-identifier').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const errorBox = document.getElementById('login-error');
+            const submitBtn = e.target.querySelector('button[type="submit"] span');
+
+            errorBox.classList.add('hidden');
+            const oldText = submitBtn.textContent;
+            submitBtn.textContent = 'Authenticating...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/org/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        localStorage.setItem('loggedInOrg', JSON.stringify(data.org));
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    const err = await response.json();
+                    errorBox.querySelector('p').textContent = err.detail || 'Invalid credentials.';
+                    errorBox.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                errorBox.querySelector('p').textContent = 'Network error connecting to organization ledger.';
+                errorBox.classList.remove('hidden');
+            } finally {
+                submitBtn.textContent = oldText;
+            }
+        });
+    </script>
+</body>
+
+</html>

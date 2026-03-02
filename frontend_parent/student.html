@@ -306,7 +306,7 @@
                 document.getElementById('total-balance').textContent = formatter.format(student.total_balance || (student.totalBalance || 0));
                 document.getElementById('spendable-balance').textContent = formatter.format(student.available_balance || (student.availableBalance || 0));
                 document.getElementById('locked-balance').textContent = formatter.format(student.locked_balance || (student.lockedBalance || 0));
-                document.getElementById('allowed-category').textContent = "Regulated"; // Static fallback or pull from policy API
+                document.getElementById('allowed-category').textContent = student.allowed_category || "None";
 
                 const tableBody = document.getElementById('student-activity-body');
                 tableBody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-500 text-sm">Loading activity...</td></tr>';
@@ -338,7 +338,7 @@
                         let displayStatus = t.status.charAt(0).toUpperCase() + t.status.slice(1);
                         if (t.status === 'locked' || t.status === 'pending') {
                             statusClass = 'status-locked';
-                        } else if (t.status === 'blocked' || t.status === 'blocked_by_smartrule' || t.status === 'rejected') {
+                        } else if (t.status === 'blocked' || t.status === 'blocked_by_smartrule' || t.status === 'rejected' || t.status === 'failed') {
                             statusClass = 'status-blocked';
                             if (t.status === 'blocked_by_smartrule') displayStatus = 'Blocked';
                         }

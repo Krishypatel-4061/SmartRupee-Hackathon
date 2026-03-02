@@ -434,7 +434,10 @@
                 try {
                     const response = await fetch(`http://127.0.0.1:8000/parent/verify/${txn.verification_id}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-User-ID': loggedInParent.id
+                        },
                         body: JSON.stringify({ action: 'Approve' })
                     });
 
@@ -455,7 +458,10 @@
                 try {
                     const response = await fetch(`http://127.0.0.1:8000/parent/verify/${txn.verification_id}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-User-ID': loggedInParent.id
+                        },
                         body: JSON.stringify({ action: 'Reject' })
                     });
 

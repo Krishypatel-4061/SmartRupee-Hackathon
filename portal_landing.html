@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SmartRupee | Portal Selection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7C3AED",
+                        "org": "#2563EB",
+                        "student": "#059669",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#08051A",
+                        "surface-dark": "#13102B",
+                        "border-dark": "#2e2839",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+        }
+        .glow-primary { box-shadow: 0 0 20px rgba(124, 58, 237, 0.4); }
+        .glow-org { box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); }
+        .glow-student { box-shadow: 0 0 20px rgba(5, 150, 105, 0.4); }
+        .circuit-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(124, 58, 237, 0.05) 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+    </style>
+</head>
+
+<body class="bg-background-dark text-slate-100 min-h-screen flex flex-col font-display">
+    <div class="layout-container flex h-full grow flex-col circuit-bg">
+        <header
+            class="flex items-center justify-center whitespace-nowrap border-b border-solid border-border-dark px-6 md:px-10 py-6 bg-white/5 backdrop-blur-md sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="size-10 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-4xl font-bold">account_balance_wallet</span>
+                </div>
+                <h2 class="text-white text-3xl font-black leading-tight tracking-tight">SmartRupee</h2>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+            <div class="absolute top-1/4 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-org/10 rounded-full blur-[100px]"></div>
+
+            <div class="text-center mb-12 z-10 max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Welcome to SmartRupee</h1>
+                <p class="text-slate-400 text-lg">Select your portal to log in and manage purpose-bound funds securely.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl z-10 px-4">
+
+                <!-- Organization Card -->
+                <a href="frontend_organization/index.html"
+                    class="group flex flex-col bg-surface-dark border border-border-dark hover:border-org/50 p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 glow-org">
+                    <div
+                        class="size-16 bg-org/10 rounded-2xl flex items-center justify-center mb-6 border border-org/20 relative">
+                        <span class="material-symbols-outlined text-4xl text-org font-bold">corporate_fare</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Organization Portal</h3>
+                    <p class="text-slate-400 mb-6 flex-1">Issue scholarships, track distributions, and verify rule-based
+                        smart contracts for students.</p>
+                    <div class="flex items-center text-org font-semibold group-hover:gap-2 transition-all">
+                        Login as Org <span class="material-symbols-outlined ml-1">arrow_forward</span>
+                    </div>
+                </a>
+
+                <!-- Parent Card -->
+                <a href="frontend_parent/verification.html"
+                    class="group flex flex-col bg-surface-dark border border-border-dark hover:border-primary/50 p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 glow-primary">
+                    <div
+                        class="size-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 border border-primary/20 relative">
+                        <span class="material-symbols-outlined text-4xl text-primary font-bold">family_restroom</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Parent Portal</h3>
+                    <p class="text-slate-400 mb-6 flex-1">Send pocket money, set spending boundaries, and monitor your
+                        child's financial habits.</p>
+                    <div class="flex items-center text-primary font-semibold group-hover:gap-2 transition-all">
+                        Login as Parent <span class="material-symbols-outlined ml-1">arrow_forward</span>
+                    </div>
+                </a>
+
+                <!-- Student Card -->
+                <a href="frontend-student/index.html"
+                    class="group flex flex-col bg-surface-dark border border-border-dark hover:border-student/50 p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 glow-student">
+                    <div
+                        class="size-16 bg-student/10 rounded-2xl flex items-center justify-center mb-6 border border-student/20 relative">
+                        <span class="material-symbols-outlined text-4xl text-student font-bold">school</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Student App</h3>
+                    <p class="text-slate-400 mb-6 flex-1">View your available balances, manage Smart Locks, and make
+                        seamless QR payments.</p>
+                    <div class="flex items-center text-student font-semibold group-hover:gap-2 transition-all">
+                        Launch App <span class="material-symbols-outlined ml-1">arrow_forward</span>
+                    </div>
+                </a>
+
+            </div>
+        </main>
+
+        <footer class="px-10 py-8 text-center text-slate-500 text-sm border-t border-border-dark bg-surface-dark/50">
+            <p>© 2024 SmartRupee Digital Solutions. Powered by CBDC Programmable Logic.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

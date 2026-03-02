@@ -52,9 +52,11 @@ function switchView(viewId, btnElement) {
 }
 
 // Fetch Students on load
-async function fetchStudents() {
+async function fetchStudents(orgId) {
     try {
-        const response = await fetch("http://127.0.0.1:8000/org/students");
+        const response = await fetch("http://127.0.0.1:8000/org/students", {
+            headers: { 'X-User-ID': orgId }
+        });
         if (response.ok) {
             const students = await response.json();
             const tbody = document.querySelector('#view-scholar-dashboard tbody');
@@ -86,9 +88,11 @@ async function fetchStudents() {
 }
 
 // Fetch Verifications on load
-async function fetchVerifications() {
+async function fetchVerifications(orgId) {
     try {
-        const response = await fetch("http://127.0.0.1:8000/org/verifications");
+        const response = await fetch("http://127.0.0.1:8000/org/verification-queue", {
+            headers: { 'X-User-ID': orgId }
+        });
         if (response.ok) {
             const verifications = await response.json();
             const tbody = document.querySelector('#view-verification-queue tbody');
@@ -104,11 +108,15 @@ async function fetchVerifications() {
 
                 tr.innerHTML = `
                     <td class="px-6 py-5 text-white">${ver.student_name}</td>
+                    <td class="px-6 py-5 text-white flex items-center gap-2">
+                        <svg class="w-4 h-4 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        ${ver.document_type || "Verification Document"}
+                    </td>
                     <td class="px-6 py-5 text-brand-textMuted font-tabular">${dateStr}</td>
                     <td class="px-6 py-5 flex justify-center gap-2">
-                        <button onclick="resolveQueue(${ver.id}, 'Approve')"
+                        <button onclick="resolveQueue(${ver.id}, 'Approved')"
                             class="bg-brand-success/20 hover:bg-brand-success/40 text-brand-success border border-brand-success/30 px-4 py-1.5 rounded-full text-xs font-bold transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)]">Approve</button>
-                        <button onclick="resolveQueue(${ver.id}, 'Reject')"
+                        <button onclick="resolveQueue(${ver.id}, 'Rejected')"
                             class="bg-brand-danger/20 hover:bg-brand-danger/40 text-brand-danger border border-brand-danger/30 px-4 py-1.5 rounded-full text-xs font-bold transition-all">Reject</button>
                     </td>
                 `;
@@ -121,9 +129,11 @@ async function fetchVerifications() {
 }
 
 // Fetch Analytics
-async function fetchAnalytics() {
+async function fetchAnalytics(orgId) {
     try {
-        const response = await fetch("http://127.0.0.1:8000/org/analytics");
+        const response = await fetch("http://127.0.0.1:8000/org/analytics", {
+            headers: { 'X-User-ID': orgId }
+        });
         if (response.ok) {
             const data = await response.json();
 
@@ -144,10 +154,20 @@ async function fetchAnalytics() {
 
 // Ensure it runs on load
 window.onload = () => {
-    fetchStudents();
-    fetchVerifications();
+    const orgObj = localStorage.getItem('loggedInOrg');
+    if (!orgObj) {
+        window.location.href = 'login.html';
+        return;
+    }
+    const org = JSON.parse(orgObj);
+    // Update the profile display with the Org Name
+    document.getElementById('org-profile-name').innerText = org.name;
+    document.getElementById('org-profile-id').innerText = `Org: #${org.id}`;
+
+    fetchStudents(org.id);
+    fetchVerifications(org.id);
     if (document.getElementById('view-reports').classList.contains('active')) {
-        fetchAnalytics();
+        fetchAnalytics(org.id);
     }
 };
 
@@ -178,10 +198,15 @@ async function handleDisburse(e) {
         is_geofenced = true;
     }
 
+    const orgObj = JSON.parse(localStorage.getItem('loggedInOrg'));
+
     try {
         const response = await fetch("http://127.0.0.1:8000/org/bulk-disburse", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': orgObj.id
+            },
             body: JSON.stringify({
                 amount: parseFloat(amount),
                 rule_type: rule_type,
@@ -206,16 +231,20 @@ async function handleDisburse(e) {
 
 // Handle Queue Approve/Reject
 async function resolveQueue(verificationId, action) {
+    const orgObj = JSON.parse(localStorage.getItem('loggedInOrg'));
     try {
-        const response = await fetch(`http://127.0.0.1:8000/org/verify/${verificationId}`, {
+        const response = await fetch(`http://127.0.0.1:8000/org/verification-queue/${verificationId}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': orgObj.id
+            },
             body: JSON.stringify({ action: action })
         });
 
         if (response.ok) {
             const data = await response.json();
-            showToast(data.message, action === 'Approve' ? 'success' : 'primary');
+            showToast(data.message, action === 'Approved' ? 'success' : 'primary');
 
             const row = document.getElementById(`queue-row-${verificationId}`);
             if (row) {
@@ -226,8 +255,8 @@ async function resolveQueue(verificationId, action) {
             }
 
             // Re-fetch the students to show their updated balances if approved
-            if (action === 'Approve') {
-                fetchStudents();
+            if (action === 'Approved') {
+                fetchStudents(orgObj.id);
             }
         } else {
             const errorData = await response.json();
@@ -301,4 +330,10 @@ function renderChart(successCount = 85, blockedCount = 15) {
             }
         }
     });
+}
+
+// Handle Logout
+function logoutOrg() {
+    localStorage.removeItem('loggedInOrg');
+    window.location.href = 'login.html';
 }

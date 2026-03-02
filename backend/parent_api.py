@@ -92,11 +92,14 @@ def get_my_wards(x_user_id: int = Header(...)):
                 u.name,
                 w.total_balance,
                 w.available_balance,
-                w.locked_balance
+                w.locked_balance,
+                STRING_AGG(DISTINCT sl.allowed_category, ', ') as allowed_category
             FROM parent_student_map psm
             JOIN users u ON psm.student_id = u.user_id
             JOIN wallets w ON u.user_id = w.user_id
+            LEFT JOIN smart_locks sl ON w.wallet_id = sl.wallet_id AND sl.status = 'Active'
             WHERE psm.parent_id = %s
+            GROUP BY u.user_id, u.name, w.total_balance, w.available_balance, w.locked_balance
         """, (x_user_id,))
 
         rows = cur.fetchall()
@@ -108,7 +111,8 @@ def get_my_wards(x_user_id: int = Header(...)):
                 "name": r[1],
                 "total_balance": float(r[2] or 0),
                 "available_balance": float(r[3] or 0),
-                "locked_balance": float(r[4] or 0)
+                "locked_balance": float(r[4] or 0),
+                "allowed_category": r[5] if r[5] else 'None'
             })
 
         return wards
@@ -161,6 +165,7 @@ def send_money(payload: SendMoneyPayload, x_user_id: int = Header(...)):
             INSERT INTO smart_locks
             (wallet_id, sender_id, amount, rule_type, allowed_category, is_geofenced, status)
             VALUES (%s, %s, %s, %s, %s, %s, 'Active')
+            RETURNING lock_id
         """, (
             wallet_id,
             x_user_id,
@@ -169,6 +174,31 @@ def send_money(payload: SendMoneyPayload, x_user_id: int = Header(...)):
             payload.allowed_category,
             payload.is_geofenced
         ))
+        
+        new_lock = cur.fetchone()
+        lock_id = new_lock[0] if new_lock else None
+
+        # Create Ledger Transaction for full traceability
+        cur.execute("""
+            INSERT INTO transactions
+            (wallet_id, amount, tx_type, merchant_name, merchant_category, status)
+            VALUES (%s, %s, 'Credit', 'Parent Transfer', 'Top Up', 'Locked')
+        """, (
+            wallet_id,
+            payload.amount
+        ))
+
+        # Auto-generate a pending Document Verification request for the demo tracking
+        if lock_id and payload.rule_type == "Document_Unlock":
+            cur.execute("""
+                INSERT INTO verifications
+                (lock_id, student_id, reviewer_id, document_name, status)
+                VALUES (%s, %s, %s, 'requested_document.pdf', 'Pending')
+            """, (
+                lock_id,
+                payload.student_id,
+                x_user_id
+            ))
 
         conn.commit()
         return {"success": True, "message": "Smart money sent to ward"}
@@ -192,13 +222,12 @@ def get_verifications(x_user_id: int = Header(...)):
             SELECT 
                 v.verification_id,
                 u.name,
-                v.document_url,
+                v.document_name,
                 v.lock_id,
                 v.created_at
             FROM verifications v
             JOIN users u ON v.student_id = u.user_id
-            JOIN parent_student_map psm ON psm.student_id = u.user_id
-            WHERE psm.parent_id = %s AND v.status = 'Pending'
+            WHERE v.reviewer_id = %s AND v.status = 'Pending'
         """, (x_user_id,))
 
         rows = cur.fetchall()
@@ -208,7 +237,7 @@ def get_verifications(x_user_id: int = Header(...)):
             result.append({
                 "verification_id": r[0],
                 "student_name": r[1],
-                "document_url": r[2],
+                "document_url": r[2],  # Mapping to frontend document_url logic
                 "lock_id": r[3],
                 "created_at": r[4].isoformat() if r[4] else None
             })
@@ -225,7 +254,7 @@ def get_verifications(x_user_id: int = Header(...)):
 # ---------- APPROVE / REJECT VERIFICATION ----------
 
 @parent_router.post("/verify/{verification_id}")
-def verify_document(verification_id: int, payload: VerifyPayload):
+def verify_document(verification_id: int, payload: VerifyPayload, x_user_id: int = Header(...)):
     if payload.action not in ["Approve", "Reject"]:
         raise HTTPException(status_code=400, detail="Invalid action")
 
@@ -236,11 +265,10 @@ def verify_document(verification_id: int, payload: VerifyPayload):
         cur.execute("""
             SELECT v.lock_id, v.student_id
             FROM verifications v
-            JOIN parent_student_map psm ON psm.student_id = v.student_id
             WHERE v.verification_id = %s
               AND v.status = 'Pending'
-              AND psm.parent_id = %s
-        """, (verification_id, PARENT_ID))
+              AND v.reviewer_id = %s
+        """, (verification_id, x_user_id))
 
         record = cur.fetchone()
         if not record:
@@ -253,6 +281,24 @@ def verify_document(verification_id: int, payload: VerifyPayload):
                 UPDATE verifications SET status = 'Rejected'
                 WHERE verification_id = %s
             """, (verification_id,))
+            
+            if lock_id:
+                cur.execute("SELECT amount, wallet_id FROM smart_locks WHERE lock_id = %s", (lock_id,))
+                rec = cur.fetchone()
+                if rec:
+                    amount, wallet_id = rec
+                    cur.execute("""
+                        UPDATE transactions
+                        SET status = 'Failed'
+                        WHERE transaction_id = (
+                            SELECT transaction_id
+                            FROM transactions
+                            WHERE wallet_id = %s AND status = 'Locked' AND amount = %s
+                            ORDER BY created_at DESC
+                            LIMIT 1
+                        )
+                    """, (wallet_id, amount))
+                    
             conn.commit()
             return {"success": True, "message": "Verification rejected"}
 
@@ -262,21 +308,38 @@ def verify_document(verification_id: int, payload: VerifyPayload):
             WHERE verification_id = %s
         """, (verification_id,))
 
-        cur.execute("""
-            UPDATE smart_locks
-            SET status = 'Unlocked'
-            WHERE lock_id = %s
-            RETURNING amount
-        """, (lock_id,))
+        if lock_id:
+            cur.execute("""
+                UPDATE smart_locks
+                SET status = 'Unlocked'
+                WHERE lock_id = %s
+                RETURNING amount, wallet_id
+            """, (lock_id,))
 
-        amount = cur.fetchone()[0]
+            lock_record = cur.fetchone()
+            amount = lock_record[0] if lock_record else 0
+            wallet_id = lock_record[1] if lock_record else None
 
-        cur.execute("""
-            UPDATE wallets
-            SET locked_balance = locked_balance - %s,
-                available_balance = available_balance + %s
-            WHERE user_id = %s
-        """, (amount, amount, student_id))
+            cur.execute("""
+                UPDATE wallets
+                SET locked_balance = locked_balance - %s,
+                    available_balance = available_balance + %s
+                WHERE user_id = %s
+            """, (amount, amount, student_id))
+
+            if wallet_id:
+                # Resolve the matching pending transaction
+                cur.execute("""
+                    UPDATE transactions
+                    SET status = 'Success'
+                    WHERE transaction_id = (
+                        SELECT transaction_id
+                        FROM transactions
+                        WHERE wallet_id = %s AND status = 'Locked' AND amount = %s
+                        ORDER BY created_at DESC
+                        LIMIT 1
+                    )
+                """, (wallet_id, amount))
 
         conn.commit()
         return {"success": True, "message": "Funds unlocked for ward"}
