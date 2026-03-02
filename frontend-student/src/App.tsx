@@ -96,7 +96,7 @@ export default function App() {
       try {
         const parsedUser = JSON.parse(savedUser);
         setUser(parsedUser);
-        setCurrentScreen(parsedUser.role === 'parent' ? 'parent' : 'home');
+        setCurrentScreen('home');
       } catch (e) {
         console.error("Failed to parse saved user", e);
       }
