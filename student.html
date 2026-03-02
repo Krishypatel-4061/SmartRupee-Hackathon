@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Student Profile - SmartRupee</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#08051A",
+                        "card-dark": "#120D2B",
+                        "accent-purple": "#a855f7",
+                        "accent-blue": "#3b82f6",
+                        "accent-green": "#10b981",
+                        "accent-red": "#ef4444"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            background-color: #08051A;
+            color: #f7f6f8;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(18, 13, 43, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+        .purple-glow {
+            box-shadow: 0 0 40px rgba(124, 59, 237, 0.15);
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-spent { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-locked { background: rgba(124, 59, 237, 0.1); color: #a855f7; border: 1px solid rgba(124, 59, 237, 0.2); }
+        .status-blocked { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            padding: 12px 16px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #7c3bed;
+            background: rgba(124, 59, 237, 0.05);
+            box-shadow: 0 0 10px rgba(124, 59, 237, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="sidebar-container"></div>
+    
+    <main class="ml-64 p-8">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white mb-1">Student Profile</h1>
+                <p class="text-gray-400">Manage individual student settings and view their specific activity.</p>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button id="download-statement" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm font-bold text-gray-400 hover:text-white">
+                    <span class="material-symbols-outlined text-sm">download</span>
+                    Statement
+                </button>
+                <div class="w-64">
+                    <select id="student-selector" class="input-field appearance-none">
+                        <!-- Populated via JS -->
+                    </select>
+                </div>
+            </div>
+        </header>
+        
+        <div id="profile-content" class="space-y-8">
+            <!-- Student Overview Card -->
+            <div class="glass-card p-8 purple-glow flex flex-col md:flex-row items-center gap-8">
+                <div class="relative">
+                    <img id="student-avatar" src="" class="w-32 h-32 rounded-3xl border-2 border-primary/30" alt="Student Avatar" />
+                    <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl flex items-center justify-center border-4 border-background-dark">
+                        <span class="material-symbols-outlined text-white text-xl">verified</span>
+                    </div>
+                </div>
+                
+                <div class="flex-1 text-center md:text-left">
+                    <h2 id="student-name" class="text-3xl font-black text-white mb-1">...</h2>
+                    <p id="student-id-display" class="text-gray-500 font-mono text-sm mb-4">ID: ...</p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                        <span class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">school</span>
+                            Class 10-B
+                        </span>
+                        <span class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">calendar_today</span>
+                            Joined Oct 2023
+                        </span>
+                        <button id="configure-rules" class="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-sm font-bold text-primary flex items-center gap-2 hover:bg-primary hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-sm">settings</span>
+                            Configure Rules
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="h-20 w-[1px] bg-white/10 hidden md:block"></div>
+                
+                <div class="text-center md:text-right">
+                    <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Balance</p>
+                    <h3 id="total-balance" class="text-4xl font-black text-white">₹0.00</h3>
+                    <p class="text-accent-green text-xs font-bold mt-1">Active Wallet</p>
+                </div>
+            </div>
+            
+            <!-- Wallet Details Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6">
+                    <p class="text-gray-400 text-sm font-medium mb-1">Spendable Balance</p>
+                    <h4 id="spendable-balance" class="text-2xl font-bold text-white">₹0.00</h4>
+                    <p class="text-xs text-gray-500 mt-2 italic">Unlocked and ready to use</p>
+                </div>
+                <div class="glass-card p-6">
+                    <p class="text-gray-400 text-sm font-medium mb-1">Locked Balance</p>
+                    <h4 id="locked-balance" class="text-2xl font-bold text-accent-purple">₹0.00</h4>
+                    <p class="text-xs text-gray-500 mt-2 italic">Requires category or manual approval</p>
+                </div>
+                <div class="glass-card p-6">
+                    <p class="text-gray-400 text-sm font-medium mb-1">Allowed Category</p>
+                    <h4 id="allowed-category" class="text-2xl font-bold text-accent-blue">...</h4>
+                    <p class="text-xs text-gray-500 mt-2 italic">Primary spending restriction</p>
+                </div>
+            </div>
+            
+            <!-- Student Transactions -->
+            <div class="glass-card p-8">
+                <h3 class="text-xl font-bold text-white mb-8">Student Activity</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
+                                <th class="pb-4 px-4">Purpose</th>
+                                <th class="pb-4 px-4">Amount</th>
+                                <th class="pb-4 px-4">Status</th>
+                                <th class="pb-4 px-4">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-activity-body">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rules Modal -->
+    <div id="rules-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
+        <div class="glass-card p-8 max-w-lg w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Configure Spending Rules</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <form id="rules-form" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-3 uppercase tracking-widest">Allowed Categories</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all">
+                            <input type="checkbox" name="categories" value="Education" class="rounded border-white/10 bg-white/5 text-primary focus:ring-primary">
+                            <span class="text-sm text-white">Education</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all">
+                            <input type="checkbox" name="categories" value="Food" class="rounded border-white/10 bg-white/5 text-primary focus:ring-primary">
+                            <span class="text-sm text-white">Food</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all">
+                            <input type="checkbox" name="categories" value="Transport" class="rounded border-white/10 bg-white/5 text-primary focus:ring-primary">
+                            <span class="text-sm text-white">Transport</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all">
+                            <input type="checkbox" name="categories" value="Health" class="rounded border-white/10 bg-white/5 text-primary focus:ring-primary">
+                            <span class="text-sm text-white">Health</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-3 uppercase tracking-widest">Daily Limit (₹)</label>
+                    <input type="number" class="input-field" placeholder="e.g. 500" />
+                </div>
+                
+                <button type="submit" class="w-full py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all">
+                    Save Rules
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/data.js"></script>
+    <script src="assets/sidebar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = window.SmartRupeeData;
+            const parent = data.getLoggedInParent();
+            const selectedStudent = data.getSelectedStudent();
+            const students = data.getStudents();
+            const studentSelector = document.getElementById('student-selector');
+            
+            if (!parent) {
+                window.location.href = 'verification.html';
+                return;
+            }
+
+            // Populate selector with parent's wards
+            const parentWards = students.filter(s => parent.wards.includes(s.id));
+            parentWards.forEach(s => {
+                const option = document.createElement('option');
+                option.value = s.id;
+                option.textContent = s.name;
+                if (selectedStudent && s.id === selectedStudent.id) {
+                    option.selected = true;
+                }
+                studentSelector.appendChild(option);
+            });
+            
+            const renderProfile = (studentId) => {
+                const student = data.getStudentById(studentId);
+                const wallet = data.getWalletByStudentId(studentId);
+                const transactions = data.getTransactions().filter(t => t.studentId === studentId);
+                
+                const formatter = new Intl.NumberFormat('en-IN', {
+                    style: 'currency',
+                    currency: 'INR'
+                });
+                
+                // Update header info
+                document.getElementById('student-avatar').src = student.avatar;
+                document.getElementById('student-name').textContent = student.name;
+                document.getElementById('student-id-display').textContent = `ID: ${student.id}`;
+                
+                // Calculate real balances from transactions
+                const spendable = transactions.filter(t => t.status === 'spent').reduce((sum, t) => sum + t.amount, 0);
+                const locked = transactions.filter(t => t.status === 'locked').reduce((sum, t) => sum + t.amount, 0);
+                
+                document.getElementById('total-balance').textContent = formatter.format(spendable + locked);
+                document.getElementById('spendable-balance').textContent = formatter.format(spendable);
+                document.getElementById('locked-balance').textContent = formatter.format(locked);
+                document.getElementById('allowed-category').textContent = wallet.allowedCategories.join(', ');
+                
+                // Update activity table
+                const tableBody = document.getElementById('student-activity-body');
+                tableBody.innerHTML = '';
+                
+                transactions.forEach(t => {
+                    const date = new Date(t.date).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short'
+                    });
+                    
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-white/5 hover:bg-white/5 transition-all group';
+                    row.innerHTML = `
+                        <td class="py-5 px-4">
+                            <p class="text-sm text-white font-medium group-hover:text-primary transition-colors">${t.purpose}</p>
+                            <p class="text-xs text-gray-500">${t.category}</p>
+                        </td>
+                        <td class="py-5 px-4 font-bold text-white">${formatter.format(t.amount)}</td>
+                        <td class="py-5 px-4">
+                            <span class="status-badge status-${t.status}">${t.status}</span>
+                        </td>
+                        <td class="py-5 px-4 text-gray-500 text-sm">${date}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            };
+            
+            studentSelector.addEventListener('change', (e) => {
+                const student = data.getStudentById(e.target.value);
+                data.setSelectedStudent(student);
+                renderProfile(e.target.value);
+            });
+            
+            // Modal Logic
+            const rulesModal = document.getElementById('rules-modal');
+            const configBtn = document.getElementById('configure-rules');
+            const closeBtn = document.getElementById('close-modal');
+            const rulesForm = document.getElementById('rules-form');
+            
+            configBtn.addEventListener('click', () => {
+                rulesModal.classList.remove('hidden');
+            });
+            
+            closeBtn.addEventListener('click', () => {
+                rulesModal.classList.add('hidden');
+            });
+            
+            rulesForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Spending rules updated successfully!');
+                rulesModal.classList.add('hidden');
+            });
+            
+            // Download Statement
+            document.getElementById('download-statement').addEventListener('click', () => {
+                alert('Generating PDF statement... Your download will start shortly.');
+            });
+            
+            // Initial render
+            if (selectedStudent) {
+                renderProfile(selectedStudent.id);
+            } else if (parentWards.length > 0) {
+                renderProfile(parentWards[0].id);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "SmartRupee Parent Portal",
+  "description": "A programmable money dashboard for parents to manage student spending with smart restrictions and real-time tracking.",
+  "requestFramePermissions": []
+}

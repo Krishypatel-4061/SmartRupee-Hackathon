@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Program Student Transfer | SmartRupee</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7C3AED",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#13102B",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+        .glass-panel {
+            background: rgba(124, 58, 237, 0.05);
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            backdrop-filter: blur(12px);
+        }
+        .glow-button {
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+        }
+        input:read-only {
+            cursor: not-allowed;
+            background-color: rgba(124, 58, 237, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+        .category-btn-active {
+            border-color: #7C3AED !important;
+            background-color: rgba(124, 58, 237, 0.1) !important;
+            color: #7C3AED !important;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased h-screen overflow-hidden">
+<div class="flex h-full w-full">
+<aside class="w-64 border-r border-primary/10 flex flex-col bg-background-light dark:bg-background-dark/50">
+<div class="p-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<h1 class="font-bold text-lg leading-tight">SmartRupee</h1>
+<p class="text-xs text-slate-500 dark:text-primary/60 font-medium">Parent Portal</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="index.html">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white shadow-md shadow-primary/20" href="send-money.html">
+<span class="material-symbols-outlined">send</span>
+<span class="text-sm font-medium">Send Money</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="verification-queue.html">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="text-sm font-medium">Verification</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="history.html">
+<span class="material-symbols-outlined">history</span>
+<span class="text-sm font-medium">History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="student.html">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm font-medium">Student Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="ward-selection.html">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Manage Wards</span>
+</a>
+</nav>
+<div class="p-4 border-t border-primary/10">
+<div class="flex items-center gap-3 p-2">
+<div id="parent-avatar" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-primary/20 overflow-hidden">
+    <img id="parent-img" src="" alt="" class="w-full h-full object-cover hidden">
+</div>
+<div class="flex-1 min-w-0">
+<p id="parent-name" class="text-xs font-semibold truncate">Alex Henderson</p>
+<p class="text-[10px] text-slate-500">Premium Account</p>
+</div>
+<span id="logout-btn" class="material-symbols-outlined text-slate-400 text-sm cursor-pointer hover:text-danger transition-colors">logout</span>
+</div>
+</div>
+</aside>
+<main class="flex-1 overflow-y-auto p-8 lg:p-12">
+<div class="max-w-4xl mx-auto">
+<header class="mb-10">
+<h2 class="text-4xl font-black tracking-tight text-slate-900 dark:text-slate-100">Program Student Transfer</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-2 text-lg">Initialize a secure transfer with specific programmable conditions and verified student data.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 space-y-8">
+<div class="space-y-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-primary/80">Student Name</label>
+<input id="student-name-input" class="w-full bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none" readonly="" type="text" value="Aarav Sharma"/>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-primary/80">Student ID</label>
+<input id="student-id-input" class="tabular-nums w-full bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none" readonly="" type="text" value="101"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-primary/80">Amount (SmartRupee)</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="text-primary font-bold text-xl">₹</span>
+</div>
+<input id="amount-input" class="tabular-nums w-full bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl pl-10 pr-4 py-4 text-3xl font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="0.00" type="text" value="2,500.00"/>
+</div>
+<p id="amount-error" class="text-danger text-xs mt-1 hidden">Please enter a valid amount greater than 0.</p>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-primary/80">Smart Condition</label>
+<div class="relative">
+<select id="condition-select" class="w-full bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl px-4 py-4 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none">
+<option value="unrestricted">Unrestricted</option>
+<option selected="" value="academic_food">Academic &amp; Food Only</option>
+<option value="doc_upload">Require Document Upload</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3 p-4 bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl">
+<input checked="" class="w-5 h-5 rounded border-primary/30 text-primary focus:ring-primary bg-transparent" id="geofencing" type="checkbox"/>
+<label class="text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer" for="geofencing">Enable Geo-fencing (Restrict usage to campus vicinity)</label>
+</div>
+<div class="space-y-3">
+<label class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-primary/80">Spending Category</label>
+<div id="category-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<button data-category="Academic" class="category-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-slate-200 dark:border-primary/10 hover:border-primary/30 text-slate-500 dark:text-slate-400 transition-all">
+<span class="material-symbols-outlined text-3xl">school</span>
+<span class="text-xs font-bold">Academic</span>
+</button>
+<button data-category="Food" class="category-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-slate-200 dark:border-primary/10 hover:border-primary/30 text-slate-500 dark:text-slate-400 transition-all">
+<span class="material-symbols-outlined text-3xl">restaurant</span>
+<span class="text-xs font-bold">Food</span>
+</button>
+<button data-category="Transport" class="category-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-slate-200 dark:border-primary/10 hover:border-primary/30 text-slate-500 dark:text-slate-400 transition-all">
+<span class="material-symbols-outlined text-3xl">directions_bus</span>
+<span class="text-xs font-bold">Transport</span>
+</button>
+<button data-category="Emergency" class="category-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-slate-200 dark:border-primary/10 hover:border-primary/30 text-slate-500 dark:text-slate-400 transition-all">
+<span class="material-symbols-outlined text-3xl">emergency</span>
+<span class="text-xs font-bold">Emergency</span>
+</button>
+</div>
+<p id="category-error" class="text-danger text-xs mt-1 hidden">Please select a spending category.</p>
+</div>
+</div>
+</div>
+<div class="pt-6">
+<button id="initialize-btn" class="glow-button w-full bg-primary hover:bg-primary/90 text-white font-bold py-5 px-8 rounded-xl flex items-center justify-center gap-3 transition-all text-lg tracking-tight">
+<span class="material-symbols-outlined">rocket_launch</span>
+                            Initialize Programmable Transfer
+                        </button>
+<p class="text-center text-xs text-slate-500 dark:text-slate-500 mt-4 italic">
+                            Secure transaction processed via SmartRupee Ledger v2.4
+                        </p>
+</div>
+</div>
+<div class="lg:col-span-1">
+<div class="glass-panel p-6 rounded-2xl sticky top-0 space-y-6">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-xl">info</span>
+<h3 class="font-bold">Logic Explanation</h3>
+</div>
+<div class="space-y-4">
+<div class="bg-primary/10 p-4 rounded-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">lock</span>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tighter">Locked State Logic</p>
+</div>
+<p id="logic-desc" class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    This transfer will be held in the student's <code class="text-primary font-mono bg-primary/20 px-1 rounded">smart_balance</code>. Funds are only unlocked once the conditions (Academic &amp; Food) are met at verified endpoints.
+                                </p>
+</div>
+<div class="space-y-3">
+<h4 class="text-xs font-bold text-slate-500 uppercase">Transfer Summary</h4>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Platform Fee</span>
+<span class="tabular-nums font-medium">₹0.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Validation Logic</span>
+<span id="summary-condition" class="text-primary font-medium italic">Enforced</span>
+</div>
+<div class="flex justify-between text-sm border-t border-primary/10 pt-3">
+<span class="font-bold">Total Debited</span>
+<span id="summary-total" class="tabular-nums font-bold text-primary">₹2,500.00</span>
+</div>
+</div>
+<div class="pt-2">
+<div class="w-full h-32 rounded-xl bg-slate-100 dark:bg-primary/20 overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary/40 text-4xl">analytics</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. State Retrieval & Initialization ---
+        const selectedWard = JSON.parse(localStorage.getItem('selectedWard'));
+        const loggedInParent = JSON.parse(localStorage.getItem('loggedInParent'));
+        
+        if (!selectedWard || !loggedInParent) {
+            window.location.href = 'ward-selection.html';
+            return;
+        }
+
+        // DOM Elements
+        const studentNameInput = document.getElementById('student-name-input');
+        const studentIdInput = document.getElementById('student-id-input');
+        const amountInput = document.getElementById('amount-input');
+        const conditionSelect = document.getElementById('condition-select');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const initializeBtn = document.getElementById('initialize-btn');
+        const summaryTotal = document.getElementById('summary-total');
+        const summaryCondition = document.getElementById('summary-condition');
+        const logicDesc = document.getElementById('logic-desc');
+        const amountError = document.getElementById('amount-error');
+        const categoryError = document.getElementById('category-error');
+        const parentNameDisplay = document.getElementById('parent-name');
+        const parentImg = document.getElementById('parent-img');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Populate Student Data
+        studentNameInput.value = selectedWard.studentName;
+        studentIdInput.value = selectedWard.studentId;
+        parentNameDisplay.textContent = loggedInParent.parentName || loggedInParent.name || 'Alex Henderson';
+        if (loggedInParent.avatar || loggedInParent.parentName) {
+            parentImg.src = loggedInParent.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${loggedInParent.parentName || 'Alex'}`;
+            parentImg.classList.remove('hidden');
+        }
+
+        // Ensure Wallet Exists
+        let wallets = JSON.parse(localStorage.getItem('wallets')) || {};
+        const walletId = selectedWard.walletId || `W${selectedWard.studentId}`;
+        if (!wallets[walletId]) {
+            wallets[walletId] = {
+                studentId: selectedWard.studentId,
+                smart_balance: 0, // Maps to 'locked' in some pages
+                total_balance: 0,  // Maps to 'spendable' in some pages
+                // For compatibility with verification-queue.html
+                locked: 0,
+                spendable: 0
+            };
+            localStorage.setItem('wallets', JSON.stringify(wallets));
+        }
+
+        let selectedCategory = null;
+
+        // --- 2. Amount Input Logic ---
+        const formatCurrency = (value) => {
+            const numericValue = value.replace(/[^0-9.]/g, '');
+            if (!numericValue) return '';
+            const parts = numericValue.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parts.join('.');
+        };
+
+        const parseAmount = (value) => {
+            return parseFloat(value.replace(/,/g, '')) || 0;
+        };
+
+        amountInput.addEventListener('input', (e) => {
+            const cursorPosition = e.target.selectionStart;
+            const originalLength = e.target.value.length;
+            
+            const formatted = formatCurrency(e.target.value);
+            e.target.value = formatted;
+            
+            // Adjust cursor position after formatting
+            const newLength = e.target.value.length;
+            e.target.setSelectionRange(cursorPosition + (newLength - originalLength), cursorPosition + (newLength - originalLength));
+            
+            updateSummary();
+            amountError.classList.add('hidden');
+        });
+
+        // --- 3. Category Selection Logic ---
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => b.classList.remove('category-btn-active'));
+                btn.classList.add('category-btn-active');
+                selectedCategory = btn.dataset.category;
+                categoryError.classList.add('hidden');
+            });
+        });
+
+        // --- 4. Smart Condition Logic & Summary Update ---
+        const updateSummary = () => {
+            const amount = parseAmount(amountInput.value);
+            summaryTotal.textContent = `₹${formatCurrency(amount.toFixed(2))}`;
+            
+            const condition = conditionSelect.value;
+            if (condition === 'unrestricted') {
+                summaryCondition.textContent = 'Unrestricted';
+                logicDesc.innerHTML = `This transfer will be added directly to the student's <code class="text-primary font-mono bg-primary/20 px-1 rounded">total_balance</code>. No verification required.`;
+            } else {
+                summaryCondition.textContent = 'Enforced';
+                const condText = condition === 'academic_food' ? 'Academic & Food' : 'Document Upload';
+                logicDesc.innerHTML = `This transfer will be held in the student's <code class="text-primary font-mono bg-primary/20 px-1 rounded">smart_balance</code>. Funds are only unlocked once the conditions (${condText}) are met.`;
+            }
+        };
+
+        conditionSelect.addEventListener('change', updateSummary);
+        updateSummary(); // Initial call
+
+        // --- 5. Initialize Transfer Button Logic ---
+        initializeBtn.addEventListener('click', () => {
+            const amount = parseAmount(amountInput.value);
+            let hasError = false;
+
+            if (amount <= 0) {
+                amountError.classList.remove('hidden');
+                hasError = true;
+            }
+
+            if (!selectedCategory) {
+                categoryError.classList.remove('hidden');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // Determine Status
+            const condition = conditionSelect.value;
+            const status = condition === 'unrestricted' ? 'Approved' : 'Locked';
+
+            // Create Transaction Object
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            const newTxn = {
+                txnId: "TXN-" + Math.floor(1000 + Math.random() * 9000),
+                studentId: selectedWard.studentId,
+                studentName: selectedWard.studentName,
+                amount: amount,
+                category: selectedCategory,
+                documentName: null,
+                aiResult: null,
+                status: status,
+                createdAt: new Date().toISOString(),
+                aiConfidence: status === 'Locked' ? 0 : 100
+            };
+
+            transactions.unshift(newTxn);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+
+            // Update Wallet
+            const currentWallets = JSON.parse(localStorage.getItem('wallets')) || {};
+            const wId = selectedWard.walletId || `W${selectedWard.studentId}`;
+            
+            if (currentWallets[wId]) {
+                if (status === 'Locked') {
+                    // Using both naming conventions for compatibility
+                    currentWallets[wId].smart_balance = (currentWallets[wId].smart_balance || 0) + amount;
+                    currentWallets[wId].locked = (currentWallets[wId].locked || 0) + amount;
+                } else {
+                    currentWallets[wId].total_balance = (currentWallets[wId].total_balance || 0) + amount;
+                    currentWallets[wId].spendable = (currentWallets[wId].spendable || 0) + amount;
+                }
+                localStorage.setItem('wallets', JSON.stringify(currentWallets));
+            }
+
+            // Redirect
+            if (status === 'Locked') {
+                window.location.href = 'verification-queue.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('loggedInParent');
+            localStorage.removeItem('selectedWard');
+            window.location.href = 'verification.html';
+        });
+    });
+</script>
+</body></html>
