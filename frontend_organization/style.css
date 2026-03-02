@@ -1,0 +1,182 @@
+body {
+    background-color: #08051A;
+    color: #FFFFFF;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Nav Items */
+.nav-item {
+    color: #94A3B8;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.nav-item.active {
+    background-color: rgba(124, 58, 237, 0.15);
+    color: #FFFFFF;
+    box-shadow: inset 3px 0 0 0 #7C3AED;
+}
+
+.nav-item:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #FFFFFF;
+}
+
+/* Glass Cards */
+.glass-card {
+    background-color: #13102B;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+    border-radius: 20px;
+    z-index: 0;
+}
+
+.glass-card>* {
+    position: relative;
+    z-index: 10;
+}
+
+/* Signature Glow */
+.glow-card {
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.2);
+}
+
+/* Inputs */
+.form-input {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #FFFFFF;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Select dropdowns text color trick for dark mode */
+select option {
+    background-color: #13102B;
+    color: #FFFFFF;
+}
+
+/* Buttons */
+.primary-btn {
+    background-color: #7C3AED;
+    color: #FFFFFF;
+    border-radius: 999px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 14px 0 rgba(124, 58, 237, 0.39);
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+    background-color: #8B5CF6;
+}
+
+/* Badges & Pills */
+.badge {
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.badge-success {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.badge-danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.badge-warning {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Typography */
+.font-tabular {
+    font-variant-numeric: tabular-nums;
+}
+
+.view-section {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.view-section.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Shimmer Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+.text-shimmer {
+    background: linear-gradient(to right,
+            #10B981 10%,
+            #34D399 40%,
+            #10B981 60%,
+            #34D399 90%);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #08051A;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #13102B;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7C3AED;
+}

@@ -1,0 +1,5 @@
+{
+  "name": "SmartRupee",
+  "description": "A programmable student wallet with AI insights and parent-controlled spending conditions.",
+  "requestFramePermissions": []
+}

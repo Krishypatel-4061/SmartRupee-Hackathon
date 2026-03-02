@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Transaction History - SmartRupee</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#08051A",
+                        "card-dark": "#120D2B",
+                        "accent-purple": "#a855f7",
+                        "accent-blue": "#3b82f6",
+                        "accent-green": "#10b981",
+                        "accent-red": "#ef4444"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            background-color: #08051A;
+            color: #f7f6f8;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(18, 13, 43, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-spent {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-locked {
+            background: rgba(124, 59, 237, 0.1);
+            color: #a855f7;
+            border: 1px solid rgba(124, 59, 237, 0.2);
+        }
+
+        .status-blocked {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #94a3b8;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .filter-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-btn.active {
+            color: #7c3bed;
+            background: rgba(124, 59, 237, 0.1);
+            border-color: rgba(124, 59, 237, 0.2);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <div id="sidebar-container"></div>
+
+    <main class="ml-64 p-8">
+        <header class="flex justify-between items-end mb-10">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white mb-1">Transaction History</h1>
+                <p class="text-gray-400" id="history-subtitle">Complete record of all smart money movements.</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center gap-4">
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
+                    <input type="text" id="search-input"
+                        class="bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-primary transition-all w-64"
+                        placeholder="Search transactions..." />
+                </div>
+                <div class="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="locked">Locked</button>
+                    <button class="filter-btn" data-filter="spent">Spent</button>
+                    <button class="filter-btn" data-filter="blocked">Blocked</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="glass-card overflow-hidden">
+            <table class="w-full text-left">
+                <thead>
+                    <tr
+                        class="bg-white/5 border-b border-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
+                        <th class="py-4 px-6">Transaction ID</th>
+                        <th class="py-4 px-6">Student</th>
+                        <th class="py-4 px-6">Purpose</th>
+                        <th class="py-4 px-6">Amount</th>
+                        <th class="py-4 px-6">Status</th>
+                        <th class="py-4 px-6">Date</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <!-- Populated via JS -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+
+    <script src="assets/sidebar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const parent = JSON.parse(localStorage.getItem('loggedInParent'));
+            const selectedStudent = JSON.parse(localStorage.getItem('selectedWard'));
+
+            const tableBody = document.getElementById('history-table-body');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const searchInput = document.getElementById('search-input');
+            const subtitle = document.getElementById('history-subtitle');
+
+            if (selectedStudent) {
+                subtitle.textContent = `Complete record for ${selectedStudent.studentName}.`;
+            }
+
+            const renderHistory = async () => {
+                try {
+                    const res = await fetch('http://127.0.0.1:8000/parent/transactions', {
+                        headers: { 'X-User-ID': parent.id }
+                    });
+                    if (!res.ok) throw new Error('Failed to fetch transactions');
+
+                    let transactions = await res.json();
+                    const filter = document.querySelector('.filter-btn.active').dataset.filter;
+                    const searchTerm = searchInput.value.toLowerCase();
+
+                    // Filter by selected student
+                    if (selectedStudent) {
+                        transactions = transactions.filter(t => t.studentId === selectedStudent.studentId ||
+                            t.student_id === selectedStudent.student_id ||
+                            t.studentId === selectedStudent.student_id ||
+                            t.student_id === selectedStudent.studentId);
+                    }
+
+                    // Filter by status
+                    if (filter !== 'all') {
+                        transactions = transactions.filter(t => t.status === filter || (filter === 'blocked' && t.status.includes('block')));
+                    }
+
+                    // Filter by search term
+                    if (searchTerm) {
+                        transactions = transactions.filter(t =>
+                            (t.purpose && t.purpose.toLowerCase().includes(searchTerm)) ||
+                            (t.id && t.id.toString().toLowerCase().includes(searchTerm)) ||
+                            (t.category && t.category.toLowerCase().includes(searchTerm)) ||
+                            (t.merchant_name && t.merchant_name.toLowerCase().includes(searchTerm))
+                        );
+                    }
+
+                    tableBody.innerHTML = '';
+
+                    if (transactions.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="py-20 text-center text-gray-500 font-medium">
+                                    No transactions found matching your criteria.
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    const formatter = new Intl.NumberFormat('en-IN', {
+                        style: 'currency',
+                        currency: 'INR'
+                    });
+
+                    transactions.forEach(t => {
+                        const date = new Date(t.date).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                        });
+
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-white/5 hover:bg-white/5 transition-all group';
+
+                        let statusClass = 'status-spent';
+                        let displayStatus = t.status.charAt(0).toUpperCase() + t.status.slice(1);
+                        if (t.status === 'locked' || t.status === 'pending') {
+                            statusClass = 'status-locked';
+                        } else if (t.status === 'blocked' || t.status === 'blocked_by_smartrule' || t.status === 'rejected') {
+                            statusClass = 'status-blocked';
+                            if (t.status === 'blocked_by_smartrule') displayStatus = 'Blocked';
+                        }
+
+                        row.innerHTML = `
+                            <td class="py-5 px-6 font-mono text-xs text-gray-500">#${t.id}</td>
+                            <td class="py-5 px-6">
+                                <div class="flex items-center gap-3">
+                                    <img src="${t.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.student_name}`}" class="w-8 h-8 rounded-full border border-white/10" alt="${t.student_name}" />
+                                    <span class="font-semibold text-white group-hover:text-primary transition-colors">${t.student_name}</span>
+                                </div>
+                            </td>
+                            <td class="py-5 px-6">
+                                <p class="text-sm text-white font-medium">${t.purpose}</p>
+                                <p class="text-xs text-gray-500">${t.category}</p>
+                            </td>
+                            <td class="py-5 px-6 font-bold text-white">${formatter.format(t.amount)}</td>
+                            <td class="py-5 px-6">
+                                <span class="status-badge ${statusClass}">${displayStatus}</span>
+                            </td>
+                            <td class="py-5 px-6 text-gray-500 text-sm">${date}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error("error loading history", error);
+                    tableBody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-red-500">Failed to load transactions.</td></tr>';
+                }
+            };
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderHistory();
+                });
+            });
+
+            searchInput.addEventListener('input', renderHistory);
+
+            renderHistory();
+        });
+    </script>
+</body>
+
+</html>

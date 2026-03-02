@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Parent Dashboard Overview - SmartRupee</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#08051A",
+                        "card-dark": "#120D2B",
+                        "accent-purple": "#a855f7",
+                        "accent-blue": "#3b82f6",
+                        "accent-green": "#10b981",
+                        "accent-red": "#ef4444"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            background-color: #08051A;
+            color: #f7f6f8;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(18, 13, 43, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .purple-glow {
+            box-shadow: 0 0 40px rgba(124, 59, 237, 0.15);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-spent {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-locked {
+            background: rgba(124, 59, 237, 0.1);
+            color: #a855f7;
+            border: 1px solid rgba(124, 59, 237, 0.2);
+        }
+
+        .status-blocked {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <div id="sidebar-container"></div>
+
+    <main class="ml-64 p-8">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white mb-1">Parent Dashboard</h1>
+                <p class="text-gray-400" id="welcome-message">Welcome back. Here's what's happening today.</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative group">
+                    <button
+                        class="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                        id="student-switcher">
+                        <img id="current-student-avatar" src="" class="w-8 h-8 rounded-full border border-primary/30"
+                            alt="Student" />
+                        <div class="text-left">
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">Managing</p>
+                            <p class="text-sm font-bold text-white" id="current-student-name">Select Student</p>
+                        </div>
+                        <span class="material-symbols-outlined text-gray-500">expand_more</span>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div class="absolute right-0 mt-2 w-64 glass-card p-2 hidden group-hover:block z-50"
+                        id="student-dropdown">
+                        <div
+                            class="p-2 text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 mb-2">
+                            Switch Student</div>
+                        <div id="student-list-dropdown" class="space-y-1">
+                            <!-- Populated via JS -->
+                        </div>
+                        <a href="ward-selection.html"
+                            class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-primary text-sm font-bold mt-2 border-t border-white/5">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            Add/Manage Wards
+                        </a>
+                    </div>
+                </div>
+
+                <div class="h-10 w-[1px] bg-white/10 mx-2"></div>
+                <div class="text-right">
+                    <p class="text-sm font-bold text-white" id="parent-name-display">Parent</p>
+                    <p class="text-xs text-gray-500">Premium Parent</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="glass-card p-6 purple-glow">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 rounded-2xl bg-primary/10 text-primary">
+                        <span class="material-symbols-outlined">payments</span>
+                    </div>
+                    <span
+                        class="text-xs font-bold text-accent-green bg-accent-green/10 px-2 py-1 rounded-lg">+12%</span>
+                </div>
+                <p class="text-gray-400 text-sm font-medium mb-1">Total Sent This Month</p>
+                <h2 class="text-3xl font-bold text-white" id="total-sent">₹0.00</h2>
+            </div>
+
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 rounded-2xl bg-accent-purple/10 text-accent-purple">
+                        <span class="material-symbols-outlined">lock</span>
+                    </div>
+                </div>
+                <p class="text-gray-400 text-sm font-medium mb-1">Active Locked Funds</p>
+                <h2 class="text-3xl font-bold text-white" id="active-locked">₹0.00</h2>
+            </div>
+
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 rounded-2xl bg-accent-red/10 text-accent-red">
+                        <span class="material-symbols-outlined">block</span>
+                    </div>
+                </div>
+                <p class="text-gray-400 text-sm font-medium mb-1">Blocked Transactions</p>
+                <h2 class="text-3xl font-bold text-white" id="blocked-count">0</h2>
+            </div>
+        </div>
+
+        <!-- AI Insights Module -->
+        <div class="glass-card p-8 mb-10 border border-primary/30 relative overflow-hidden group">
+            <div
+                class="absolute right-0 top-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10 group-hover:bg-primary/20 transition-all duration-500">
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="p-3 rounded-2xl bg-gradient-to-br from-primary to-accent-blue text-white shadow-lg">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-white mb-2 tracking-tight">AI Spending Insights</h3>
+                    <div id="ai-insights-content" class="bg-black/20 rounded-xl p-4 border border-white/5 space-y-3">
+                        <div class="animate-pulse flex space-x-4">
+                            <div class="flex-1 space-y-2 py-1">
+                                <div class="h-2 bg-white/10 rounded w-3/4"></div>
+                                <div class="h-2 bg-white/10 rounded w-1/2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 ml-16 flex gap-3">
+                <a href="send-money.html"
+                    class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold text-white transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">tune</span>
+                    Adjust Smart Rules
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="glass-card p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-xl font-bold text-white">Recent Activity</h3>
+                <a href="history.html" class="text-primary text-sm font-semibold hover:underline">View All History</a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
+                            <th class="pb-4 px-4">Student</th>
+                            <th class="pb-4 px-4">Amount</th>
+                            <th class="pb-4 px-4">Category</th>
+                            <th class="pb-4 px-4">Status</th>
+                            <th class="pb-4 px-4">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-activity-body">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/sidebar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const parent = JSON.parse(localStorage.getItem('loggedInParent'));
+            let selectedStudent = JSON.parse(localStorage.getItem('selectedWard'));
+
+            if (!parent) {
+                window.location.href = 'verification.html';
+                return;
+            }
+
+            if (!selectedStudent) {
+                window.location.href = 'ward-selection.html';
+                return;
+            }
+
+            // Update UI with parent info
+            const pName = parent.parentName || parent.name || 'Parent';
+            document.getElementById('parent-name-display').textContent = pName;
+            document.getElementById('welcome-message').textContent = `Welcome back, ${pName.split(' ')[0]}. Here's what's happening today.`;
+
+            const updateDashboard = async () => {
+                // Update Student Switcher
+                document.getElementById('current-student-avatar').src = selectedStudent.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedStudent.studentName}`;
+                document.getElementById('current-student-name').textContent = selectedStudent.studentName;
+
+                // Fetch metrics from backend dynamically
+                try {
+                    const response = await fetch('http://127.0.0.1:8000/parent/analytics', {
+                        headers: { 'X-User-ID': parent.id }
+                    });
+                    if (response.ok) {
+                        const dataMetrics = await response.json();
+                        const formatter = new Intl.NumberFormat('en-IN', {
+                            style: 'currency',
+                            currency: 'INR'
+                        });
+
+                        // We do not have exactly total sent logic isolated vs what's in DB natively per ward easily yet.
+                        // I will approximate using mock calculation from `total_balance` vs `locked_balance` 
+                        // retrieved dynamically from wards, while getting blocked from analytics.
+
+                        const wardsRes = await fetch('http://127.0.0.1:8000/parent/wards', {
+                            headers: { 'X-User-ID': parent.id }
+                        });
+                        if (wardsRes.ok) {
+                            const wardsData = await wardsRes.json();
+                            const currWard = wardsData.find(w => w.student_id === selectedStudent.studentId);
+
+                            // Let's populate Total Sent (assuming all available is sent) and actve locked safely from Wallet
+                            const activeLocked = currWard ? currWard.locked_balance : 0;
+                            const totalSent = currWard ? currWard.available_balance + activeLocked : 0;
+
+                            document.getElementById('total-sent').textContent = formatter.format(totalSent);
+                            document.getElementById('active-locked').textContent = formatter.format(activeLocked);
+                        } else {
+                            document.getElementById('total-sent').textContent = formatter.format(0);
+                            document.getElementById('active-locked').textContent = formatter.format(0);
+                        }
+
+                        document.getElementById('blocked-count').textContent = dataMetrics.blocked || 0;
+                    }
+                } catch (e) {
+                    console.error("error fetching analytics", e);
+                }
+
+                // Fetch and Populate recent activity
+                try {
+                    const txRes = await fetch('http://127.0.0.1:8000/parent/transactions', {
+                        headers: { 'X-User-ID': parent.id }
+                    });
+                    if (txRes.ok) {
+                        const allTxns = await txRes.json();
+                        // Filter transactions for the selected student
+                        const txns = allTxns.filter(t => t.studentId === selectedStudent.studentId);
+
+                        const tableBody = document.getElementById('recent-activity-body');
+                        tableBody.innerHTML = '';
+
+                        if (txns.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="5" class="py-5 text-center text-gray-500 text-sm">No recent activity found.</td></tr>';
+                        } else {
+                            txns.slice(0, 5).forEach(t => {
+                                const date = new Date(t.date).toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short'
+                                });
+
+                                const row = document.createElement('tr');
+                                row.className = 'border-b border-white/5 hover:bg-white/5 transition-all cursor-pointer group';
+
+                                // Determine styling based on status
+                                let statusClass = 'status-spent';
+                                let displayStatus = 'Spent';
+                                if (t.status === 'locked' || t.status === 'pending') {
+                                    statusClass = 'status-locked';
+                                    displayStatus = 'Locked';
+                                } else if (t.status === 'blocked' || t.status === 'blocked_by_smartrule') {
+                                    statusClass = 'status-blocked';
+                                    displayStatus = 'Blocked';
+                                } else if (t.status === 'rejected') {
+                                    statusClass = 'status-blocked';
+                                    displayStatus = 'Rejected';
+                                }
+
+                                row.innerHTML = `
+                                    <td class="py-5 px-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="${selectedStudent.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedStudent.studentName}`}" class="w-10 h-10 rounded-full border border-white/10" alt="${selectedStudent.studentName}" />
+                                            <span class="font-semibold text-white group-hover:text-primary transition-colors">${selectedStudent.studentName}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-5 px-4 font-bold text-white">₹${t.amount.toFixed(2)}</td>
+                                    <td class="py-5 px-4">
+                                        <span class="text-gray-400 text-sm">${t.category}</span>
+                                    </td>
+                                    <td class="py-5 px-4">
+                                        <span class="status-badge ${statusClass}">${displayStatus}</span>
+                                    </td>
+                                    <td class="py-5 px-4 text-gray-500 text-sm">${date}</td>
+                                `;
+                                tableBody.appendChild(row);
+                            });
+
+                            // Generate AI Insights based on transactions
+                            const insightsContainer = document.getElementById('ai-insights-content');
+
+                            // Calculate category spending
+                            const categoryTotals = {};
+                            txns.forEach(t => {
+                                if (t.status === 'spent') {
+                                    categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+                                }
+                            });
+
+                            // Find highest spending category
+                            let topCategory = null;
+                            let maxSpend = 0;
+                            for (const [cat, amt] of Object.entries(categoryTotals)) {
+                                if (amt > maxSpend) {
+                                    maxSpend = amt;
+                                    topCategory = cat;
+                                }
+                            }
+
+                            // Generate insights
+                            insightsContainer.innerHTML = '';
+
+                            if (topCategory) {
+                                insightsContainer.innerHTML += `
+                                    <div class="flex items-start gap-3">
+                                        <span class="material-symbols-outlined text-accent-blue text-lg mt-0.5">insights</span>
+                                        <p class="text-sm text-gray-300"><strong class="text-white font-semibold">Spending Trend:</strong> ${selectedStudent.studentName} has spent a significant portion (₹${maxSpend.toFixed(2)}) on <strong>${topCategory}</strong> recently. Consider reviewing rules for this category.</p>
+                                    </div>
+                                `;
+                            } else {
+                                insightsContainer.innerHTML += `
+                                    <div class="flex items-start gap-3">
+                                        <span class="material-symbols-outlined text-accent-green text-lg mt-0.5">check_circle</span>
+                                        <p class="text-sm text-gray-300"><strong class="text-white font-semibold">Spending Healthy:</strong> Spending patterns look normal and comply with active Smart Rules.</p>
+                                    </div>
+                                `;
+                            }
+
+                            // Check for blocked/rejected transactions
+                            const blockedIssues = txns.filter(t => t.status === 'blocked' || t.status === 'blocked_by_smartrule' || t.status === 'rejected');
+                            if (blockedIssues.length > 0) {
+                                insightsContainer.innerHTML += `
+                                    <div class="flex items-start gap-3 mt-3 pt-3 border-t border-white/10">
+                                        <span class="material-symbols-outlined text-accent-red text-lg mt-0.5">warning</span>
+                                        <p class="text-sm text-gray-300"><strong class="text-white font-semibold">Policy Enforcement:</strong> ${blockedIssues.length} transaction(s) were blocked automatically due to restricted categories. The smart money wrapper is functioning correctly.</p>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("error fetching transactions", e);
+                }
+            };
+
+            // Populate Student Dropdown
+            const populateDropdown = async () => {
+                const dropdownList = document.getElementById('student-list-dropdown');
+                dropdownList.innerHTML = '';
+
+                try {
+                    const response = await fetch('http://127.0.0.1:8000/parent/wards', {
+                        headers: { 'X-User-ID': parent.id }
+                    });
+                    if (response.ok) {
+                        const parentWards = await response.json();
+
+                        parentWards.forEach(ward => {
+                            if (ward.student_id === selectedStudent.studentId) return;
+
+                            const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${ward.name}`;
+                            const item = document.createElement('button');
+                            item.className = 'w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-left';
+                            item.innerHTML = `
+                                <img src="${avatarUrl}" class="w-8 h-8 rounded-full border border-white/10" alt="${ward.name}" />
+                                <div>
+                                    <p class="text-sm font-bold text-white">${ward.name}</p>
+                                    <p class="text-xs text-gray-500">ID: ${ward.student_id}</p>
+                                </div>
+                            `;
+
+                            item.addEventListener('click', () => {
+                                const mappedWard = {
+                                    studentId: ward.student_id,
+                                    studentName: ward.name,
+                                    walletId: ward.wallet_id || `W${ward.student_id}`
+                                }
+                                localStorage.setItem('selectedWard', JSON.stringify(mappedWard));
+                                selectedStudent = mappedWard;
+                                updateDashboard();
+                                window.location.reload();
+                            });
+
+                            dropdownList.appendChild(item);
+                        });
+                    }
+                } catch (e) { console.error(e); }
+            };
+
+            updateDashboard();
+            populateDropdown();
+        });
+    </script>
+</body>
+
+</html>

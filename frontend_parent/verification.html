@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Parent Portal Secure Login | SmartRupee</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7C3AED",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#08051A",
+                        "surface-dark": "#13102B",
+                        "border-dark": "#2e2839",
+                        "error": "#EF4444"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+        }
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+        }
+        .circuit-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(124, 58, 237, 0.05) 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+    </style>
+</head>
+
+<body class="bg-background-dark text-slate-100 min-h-screen flex flex-col font-display">
+    <div class="layout-container flex h-full grow flex-col circuit-bg">
+        <header
+            class="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-dark px-6 md:px-10 py-4 bg-white/5 backdrop-blur-md sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="size-8 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl font-bold">account_balance_wallet</span>
+                </div>
+                <h2 class="text-white text-xl font-bold leading-tight tracking-tight">SmartRupee</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8 items-center">
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-slate-300 text-sm font-medium hover:text-primary transition-colors"
+                        href="#">Security</a>
+                    <a class="text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Help
+                        Center</a>
+                </nav>
+            </div>
+        </header>
+        <main class="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
+            <div class="absolute top-1/4 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-[100px]"></div>
+            <div
+                class="w-full max-w-[480px] bg-surface-dark p-8 md:p-12 rounded-2xl shadow-2xl border border-border-dark z-10">
+                <div class="flex flex-col items-center mb-10 text-center">
+                    <div
+                        class="size-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 border border-primary/20 relative group">
+                        <span class="material-symbols-outlined text-4xl text-primary font-bold">lock_person</span>
+                        <div
+                            class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity">
+                        </div>
+                    </div>
+                    <h1 class="text-3xl font-black text-white tracking-tight mb-2">Parent Portal Login</h1>
+                    <p class="text-slate-400 text-sm font-normal">Enter your credentials to manage your family accounts
+                    </p>
+                </div>
+                <form id="login-form" class="space-y-5">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-200 text-sm font-semibold px-1">Parent Name or Email</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                            <input id="login-identifier"
+                                class="w-full pl-12 pr-4 py-4 rounded-xl border border-border-dark bg-background-dark/50 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="Enter name or email" required="" type="text" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between items-center px-1">
+                            <label class="text-slate-200 text-sm font-semibold">Password</label>
+                            <a class="text-primary text-xs font-bold hover:underline" href="#">Forgot?</a>
+                        </div>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">key</span>
+                            <input id="login-password"
+                                class="w-full pl-12 pr-4 py-4 rounded-xl border border-border-dark bg-background-dark/50 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="••••••••" required="" type="password" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-200 text-sm font-semibold px-1">Student Name</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">face</span>
+                            <input id="login-student-name"
+                                class="w-full pl-12 pr-4 py-4 rounded-xl border border-border-dark bg-background-dark/50 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="Enter student's exact name" required="" type="text" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-200 text-sm font-semibold px-1">Student ID</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">badge</span>
+                            <input id="login-student-id"
+                                class="w-full pl-12 pr-4 py-4 rounded-xl border border-border-dark bg-background-dark/50 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="Enter student ID number" required="" type="number" />
+                        </div>
+                    </div>
+                    <div id="login-error" class="hidden text-error text-xs font-semibold px-1">
+                        Invalid details. Please ensure parent and student info match.
+                    </div>
+                    <div class="flex items-center justify-between pt-2">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input
+                                class="rounded border-border-dark bg-transparent text-primary focus:ring-primary h-4 w-4"
+                                type="checkbox" />
+                            <span class="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">Keep me
+                                signed in</span>
+                        </label>
+                    </div>
+                    <button
+                        class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 glow-primary active:scale-[0.98] mt-4 flex items-center justify-center gap-2"
+                        type="submit">
+                        <span>Login</span>
+                        <span class="material-symbols-outlined text-xl">login</span>
+                    </button>
+                </form>
+                <div class="mt-10 pt-8 border-t border-border-dark flex flex-col items-center gap-4">
+                    <div class="flex items-center gap-2 text-slate-500">
+                        <span class="material-symbols-outlined text-sm">verified_user</span>
+                        <p class="text-[10px] uppercase tracking-widest font-bold">Secure Authentication</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="px-10 py-6 text-center text-slate-500 text-xs">
+            <div class="flex flex-wrap justify-center gap-6 mb-2">
+                <a class="hover:text-primary" href="#">Privacy Policy</a>
+                <a class="hover:text-primary" href="#">Terms of Service</a>
+                <a class="hover:text-primary" href="#">Compliance</a>
+                <a class="hover:text-primary" href="#">Support</a>
+            </div>
+            <p>© 2024 SmartRupee Digital Solutions. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Data Model Seeding ---
+            const mockParents = [
+                {
+                    parentId: "PARENT-001",
+                    parentName: "Mr. Sharma",
+                    email: "sharma@example.com",
+                    password: "demo123",
+                    wards: [
+                        {
+                            studentName: "Aarav Sharma",
+                            studentId: "101",
+                            grade: "8-B",
+                            school: "St. Xavier's High"
+                        },
+                        {
+                            studentName: "Ananya Sharma",
+                            studentId: "103",
+                            grade: "5-A",
+                            school: "St. Xavier's High"
+                        }
+                    ]
+                }
+            ];
+
+            if (!localStorage.getItem('parents')) {
+                localStorage.setItem('parents', JSON.stringify(mockParents));
+            }
+
+            // --- Login Logic ---
+            const loginForm = document.getElementById('login-form');
+            const loginIdentifier = document.getElementById('login-identifier');
+            const loginPassword = document.getElementById('login-password');
+            const loginStudentName = document.getElementById('login-student-name');
+            const loginStudentId = document.getElementById('login-student-id');
+            const loginError = document.getElementById('login-error');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                loginError.classList.add('hidden');
+
+                const identifier = loginIdentifier.value.trim();
+                const password = loginPassword.value.trim();
+                const studentName = loginStudentName.value.trim();
+                const studentId = parseInt(loginStudentId.value.trim(), 10);
+
+                const oldText = loginForm.querySelector('button[type="submit"] span').textContent;
+                loginForm.querySelector('button[type="submit"] span').textContent = 'Verifying...';
+
+                try {
+                    const response = await fetch('http://127.0.0.1:8000/parent/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            parent_identifier: identifier,
+                            password: password,
+                            student_name: studentName,
+                            student_id: studentId
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.parent) {
+                            // Save matched parent object as loggedInParent natively from backend dict structure
+                            localStorage.setItem('loggedInParent', JSON.stringify(data.parent));
+
+                            // Clear any existing selectedWard to reset UI properly
+                            localStorage.removeItem('selectedWard');
+
+                            // Proceed
+                            window.location.href = 'ward-selection.html';
+                        }
+                    } else {
+                        const err = await response.json();
+                        loginError.textContent = err.detail || 'Invalid parent credentials. Please try again.';
+                        loginError.classList.remove('hidden');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    loginError.textContent = 'Network error connecting to parent ledger system.';
+                    loginError.classList.remove('hidden');
+                } finally {
+                    loginForm.querySelector('button[type="submit"] span').textContent = oldText;
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

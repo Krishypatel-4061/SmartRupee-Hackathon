@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7C3AED",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#08051A",
+                        "card-dark": "#13102B",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>Link New Ward | SmartRupee</title>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen relative overflow-x-hidden">
+<div class="fixed inset-0 z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]"></div>
+</div>
+<div class="fixed inset-0 z-0 blur-md opacity-30 pointer-events-none">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between border-b border-primary/20 px-10 py-3">
+<div class="flex items-center gap-4">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+</div>
+<h2 class="text-lg font-bold tracking-tight">SmartRupee</h2>
+</div>
+</header>
+<main class="p-10 grid grid-cols-3 gap-6">
+<div class="h-40 bg-primary/10 rounded-xl border border-primary/20"></div>
+<div class="h-40 bg-primary/10 rounded-xl border border-primary/20"></div>
+<div class="h-40 bg-primary/10 rounded-xl border border-primary/20"></div>
+<div class="col-span-3 h-96 bg-primary/5 rounded-xl border border-primary/20"></div>
+</main>
+</div>
+</div>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+<div class="w-full max-w-lg bg-card-dark border border-primary/30 rounded-2xl shadow-2xl overflow-hidden">
+<div class="p-8 pb-4 text-center">
+<div class="inline-flex items-center justify-center p-3 rounded-full bg-primary/10 text-primary mb-4">
+<span class="material-symbols-outlined text-4xl">person_add</span>
+</div>
+<h1 class="text-2xl font-bold tracking-tight text-slate-100">Link New Ward</h1>
+<p class="mt-3 text-slate-400 text-sm leading-relaxed px-4">
+                    Enter your child's school-issued ID to begin programmable fund management.
+                </p>
+</div>
+<form id="add-ward-form" class="p-8 pt-4 space-y-6">
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-sm font-medium text-slate-300 ml-1" for="student-name">Student Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xl">person</span>
+<input class="w-full bg-background-dark/50 border border-primary/20 rounded-xl py-3 pl-11 pr-4 text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-600" id="student-name" name="student-name" placeholder="Full name as per school records" required type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-medium text-slate-300 ml-1" for="student-id">Student ID</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xl">badge</span>
+<input class="w-full bg-background-dark/50 border border-primary/20 rounded-xl py-3 pl-11 pr-4 text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-600" id="student-id" name="student-id" placeholder="e.g. SCH-10294" required type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-medium text-slate-300 ml-1" for="verification-code">Relationship Verification Code</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xl">key</span>
+<input class="w-full bg-background-dark/50 border border-primary/20 rounded-xl py-3 pl-11 pr-4 text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-600 tracking-widest" id="verification-code" name="verification-code" placeholder="Enter 6-digit code" required type="password"/>
+</div>
+<p class="text-[11px] text-slate-500 ml-1">This code was sent to your registered mobile number by the school administration.</p>
+</div>
+</div>
+<div class="pt-2 flex flex-col gap-3">
+<button class="w-full py-3.5 bg-primary hover:bg-opacity-90 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2" type="submit">
+<span>Verify &amp; Link</span>
+<span class="material-symbols-outlined text-lg">link</span>
+</button>
+<button id="cancel-btn" class="w-full py-3 text-slate-400 hover:text-slate-200 text-sm font-medium transition-colors" type="button">
+                        Cancel
+                    </button>
+</div>
+</form>
+<div class="bg-primary/5 p-4 flex items-center justify-center gap-2 border-t border-primary/10">
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+<span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Institutional Grade Verification</span>
+</div>
+</div>
+</div>
+<div class="fixed bottom-6 left-0 right-0 text-center z-50 pointer-events-none">
+<p class="text-slate-500 text-sm">© 2024 SmartRupee Digital Systems • Secure Parent Gateway</p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Auth Check ---
+        const loggedInParent = JSON.parse(localStorage.getItem('loggedInParent'));
+        if (!loggedInParent) {
+            window.location.href = 'verification.html';
+            return;
+        }
+
+        const addWardForm = document.getElementById('add-ward-form');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        // --- Cancel Logic ---
+        cancelBtn.addEventListener('click', () => {
+            window.location.href = 'ward-selection.html';
+        });
+
+        // --- Add Ward Logic ---
+        addWardForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentId = document.getElementById('student-id').value.trim();
+            const verificationCode = document.getElementById('verification-code').value.trim();
+
+            if (!studentName || !studentId || !verificationCode) {
+                return; // HTML5 required handles this but safety first
+            }
+
+            // Fetch current state
+            const parents = JSON.parse(localStorage.getItem('parents') || '[]');
+            const parentIndex = parents.findIndex(p => p.parentId === loggedInParent.parentId);
+
+            if (parentIndex !== -1) {
+                const newWard = {
+                    studentName: studentName,
+                    studentId: studentId,
+                    grade: "New Student", // Default for new link
+                    school: "St. Xavier's High" // Default for demo
+                };
+
+                // Update parents array
+                parents[parentIndex].wards.push(newWard);
+                localStorage.setItem('parents', JSON.stringify(parents));
+
+                // Update loggedInParent
+                localStorage.setItem('loggedInParent', JSON.stringify(parents[parentIndex]));
+
+                // Redirect back to Ward Selection Page
+                window.location.href = 'ward-selection.html';
+            }
+        });
+    });
+</script>
+
+</body></html>

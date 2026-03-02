@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartRupee - QR Demo Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            .no-print { display: none; }
+            .card { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-12 text-center no-print">
+            <h1 class="text-3xl font-black text-slate-900 mb-2">SmartRupee Demo Cards</h1>
+            <p class="text-slate-600">Print these A5 cards to demonstrate the "Approved" and "Blocked" payment flows.</p>
+            <button onclick="window.print()" class="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors">
+                Print Cards
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Card 1: Approved -->
+            <div class="card bg-white border-2 border-emerald-500 rounded-[2rem] overflow-hidden shadow-xl">
+                <div class="bg-emerald-500 p-6 text-center">
+                    <h2 class="text-white text-2xl font-black uppercase tracking-tight">✅ Approved Merchant</h2>
+                </div>
+                <div class="p-12 flex flex-col items-center text-center">
+                    <p class="text-slate-500 font-bold mb-8 uppercase tracking-widest text-sm">Academic Book Store</p>
+                    
+                    <div class="relative size-64 bg-slate-50 rounded-2xl flex items-center justify-center border-4 border-emerald-100 mb-8">
+                        <!-- Simulated QR Code -->
+                        <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-900">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                            <path d="M7 7h.01M17 7h.01M7 17h.01M17 17h.01M14 14h.01M10 10h.01"></path>
+                        </svg>
+                        <div class="absolute inset-0 border-8 border-emerald-500/10 rounded-2xl"></div>
+                    </div>
+
+                    <div class="bg-emerald-50 px-6 py-3 rounded-full border border-emerald-100">
+                        <span class="text-emerald-700 font-bold text-sm">Category: Academic</span>
+                    </div>
+                    
+                    <p class="mt-8 text-slate-400 text-xs font-medium italic">
+                        Scan this to demonstrate a <span class="text-emerald-600 font-bold">SUCCESSFUL</span> payment.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 2: Blocked -->
+            <div class="card bg-white border-2 border-red-500 rounded-[2rem] overflow-hidden shadow-xl">
+                <div class="bg-red-500 p-6 text-center">
+                    <h2 class="text-white text-2xl font-black uppercase tracking-tight">🚫 Blocked Merchant</h2>
+                </div>
+                <div class="p-12 flex flex-col items-center text-center">
+                    <p class="text-slate-500 font-bold mb-8 uppercase tracking-widest text-sm">GameZone Café</p>
+                    
+                    <div class="relative size-64 bg-slate-50 rounded-2xl flex items-center justify-center border-4 border-red-100 mb-8">
+                        <!-- Simulated QR Code -->
+                        <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-900">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                            <path d="M7 7h.01M17 7h.01M7 17h.01M17 17h.01M14 14h.01M10 10h.01"></path>
+                        </svg>
+                        <div class="absolute inset-0 border-8 border-red-500/10 rounded-2xl"></div>
+                    </div>
+
+                    <div class="bg-red-50 px-6 py-3 rounded-full border border-red-100">
+                        <span class="text-red-700 font-bold text-sm">Category: Gaming</span>
+                    </div>
+                    
+                    <p class="mt-8 text-slate-400 text-xs font-medium italic">
+                        Scan this to demonstrate a <span class="text-red-600 font-bold">BLOCKED</span> payment.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-center text-slate-400 text-sm no-print">
+            <p>© 2024 SmartRupee Compliance Engine • Demo Materials</p>
+        </footer>
+    </div>
+</body>
+</html>
