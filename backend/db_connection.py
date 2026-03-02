@@ -21,6 +21,7 @@ def setup_database():
         cur = conn.cursor()
 
         print("Wiping old tables...")
+        cur.execute("DROP TABLE IF EXISTS payment_requests CASCADE;")
         cur.execute("DROP TABLE IF EXISTS verifications CASCADE;")
         cur.execute("DROP TABLE IF EXISTS transactions CASCADE;")
         cur.execute("DROP TABLE IF EXISTS smart_locks CASCADE;")
@@ -123,8 +124,8 @@ def setup_database():
         cur.execute("INSERT INTO smart_locks (lock_id, wallet_id, sender_id, amount, rule_type, allowed_category, status) VALUES (1, 1, 1, 3000.00, 'Category_Lock', 'Education', 'Active');")
         cur.execute("INSERT INTO smart_locks (lock_id, wallet_id, sender_id, amount, rule_type, allowed_category, status) VALUES (2, 2, 1, 5000.00, 'Document_Unlock', 'Books', 'Active');")
 
-        cur.execute("INSERT INTO transactions (wallet_id, lock_id, sender_id, amount, tx_type, merchant_name, merchant_category, status) VALUES (1, 1, 3, 500, 'Debit', 'VIT Canteen', 'Food', 'Success');")
-        cur.execute("INSERT INTO transactions (wallet_id, lock_id, sender_id, amount, tx_type, merchant_name, merchant_category, status) VALUES (1, 1, 3, 1500, 'Debit', 'Steam Games', 'Gaming', 'Blocked_by_SmartRule');")
+        cur.execute("INSERT INTO transactions (wallet_id, amount, tx_type, merchant_name, merchant_category, status) VALUES (1, 500, 'Debit', 'VIT Canteen', 'Food', 'Success');")
+        cur.execute("INSERT INTO transactions (wallet_id, amount, tx_type, merchant_name, merchant_category, status) VALUES (1, 1500, 'Debit', 'Steam Games', 'Gaming', 'Blocked_by_SmartRule');")
 
         cur.execute("INSERT INTO verifications (lock_id, student_id, reviewer_id, document_name, status) VALUES (2, 4, 1, 'semester_3_marksheet.pdf', 'Pending');")
 

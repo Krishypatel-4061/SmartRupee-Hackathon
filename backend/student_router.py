@@ -179,9 +179,9 @@ def attempt_spend(student_id: int, payload: SpendPayload):
         if payload.merchant_category.lower() != allowed_category.lower():
             cur.execute("""
                 INSERT INTO transactions
-                (wallet_id, lock_id, tx_type, amount, status, merchant_name, merchant_category, sender_id)
-                VALUES (%s, %s, 'Debit', %s, 'Blocked_by_SmartRule', %s, %s, %s)
-            """, (wallet_id, lock_id, payload.amount, payload.merchant_name, payload.merchant_category, student_id))
+                (wallet_id, tx_type, amount, status, merchant_name, merchant_category)
+                VALUES (%s, 'Debit', %s, 'Blocked_by_SmartRule', %s, %s)
+            """, (wallet_id, payload.amount, payload.merchant_name, payload.merchant_category))
 
             conn.commit()
             return {
@@ -201,9 +201,9 @@ def attempt_spend(student_id: int, payload: SpendPayload):
 
         cur.execute("""
             INSERT INTO transactions
-            (wallet_id, lock_id, tx_type, amount, status, merchant_name, merchant_category, sender_id)
-            VALUES (%s, %s, 'Debit', %s, 'Success', %s, %s, %s)
-        """, (wallet_id, lock_id, payload.amount, payload.merchant_name, payload.merchant_category, student_id))
+            (wallet_id, tx_type, amount, status, merchant_name, merchant_category)
+            VALUES (%s, 'Debit', %s, 'Success', %s, %s)
+        """, (wallet_id, payload.amount, payload.merchant_name, payload.merchant_category))
 
         conn.commit()
 

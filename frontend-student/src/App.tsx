@@ -126,6 +126,30 @@ export default function App() {
     }))
     : (mockData?.transactions || []);
 
+  const mappedHistoryTransactions = liveTransactions.length > 0
+    ? liveTransactions.map((tx: any, idx: number) => {
+      let mappedStatus = 'spent';
+      if (tx.status === 'locked' || tx.status === 'pending') {
+        mappedStatus = 'locked';
+      } else if (tx.status === 'blocked' || tx.status === 'blocked_by_smartrule' || tx.status === 'failed' || tx.status === 'rejected') {
+        mappedStatus = 'locked'; // Visual fallback for locked/blocked
+      } else if (tx.status === 'unlocked') {
+        mappedStatus = 'unlocked';
+      }
+      return {
+        id: tx.id ?? idx,
+        sender: tx.purpose || 'Unknown',
+        senderInitials: (tx.purpose || 'U').split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase(),
+        amount: tx.amount,
+        status: mappedStatus as 'locked' | 'unlocked' | 'spent',
+        condition: tx.category || 'General',
+        unlockTrigger: tx.tx_type || 'Transfer',
+        date: tx.date ? new Date(tx.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent',
+        originalStatus: tx.status
+      };
+    })
+    : mappedTransactions;
+
   // Navigation helper
   const navigate = (screen: any, data: any = null) => {
     if (data) setSelectedTransaction(data);
@@ -785,7 +809,7 @@ export default function App() {
   };
 
   const History = () => {
-    const filteredTransactions = mappedTransactions.filter(tx => {
+    const filteredTransactions = mappedHistoryTransactions.filter(tx => {
       if (historyFilter === 'All') return true;
       return tx.status === historyFilter.toLowerCase();
     });
@@ -852,7 +876,7 @@ export default function App() {
             <div className="h-8 w-[1px] bg-white/10"></div>
             <div className="flex flex-col text-right">
               <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Total Spent</p>
-              <p className="text-sm font-bold text-white">₹6,200</p>
+              <p className="text-sm font-bold text-white">₹{(analyticsData?.total_spent ?? mockData.wallet.total - mockData.wallet.available).toLocaleString()}</p>
             </div>
           </div>
           <nav className="bg-white dark:bg-surface/95 backdrop-blur-md px-6 py-4 flex items-center justify-between border-t border-slate-100 dark:border-white/5">
@@ -1774,7 +1798,7 @@ export default function App() {
               <div className="relative w-40 h-40 flex items-center justify-center">
                 <canvas ref={canvasRef} width="200" height="200" className="w-full h-full" />
                 <div className="absolute flex flex-col items-center">
-                  <span className="text-2xl font-bold text-white leading-none">₹6,200</span>
+                  <span className="text-2xl font-bold text-white leading-none">₹{(analyticsData?.total_spent ?? mockData.wallet.total - mockData.wallet.available).toLocaleString()}</span>
                   <span className="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">spent this week</span>
                 </div>
               </div>
