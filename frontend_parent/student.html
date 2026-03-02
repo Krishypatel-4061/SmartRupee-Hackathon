@@ -265,10 +265,9 @@
 
     <script src="assets/sidebar.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const parent = JSON.parse(localStorage.getItem('loggedInParent'));
             const selectedStudent = JSON.parse(localStorage.getItem('selectedWard'));
-            const students = parent ? parent.wards : [];
             const studentSelector = document.getElementById('student-selector');
 
             if (!parent) {
@@ -276,20 +275,33 @@
                 return;
             }
 
-            // Populate selector with parent's wards
-            const parentWards = students.filter(s => parent.wards.includes(s.id));
-            parentWards.forEach(s => {
+            let students = [];
+
+            // Fetch live student (ward) data from the API to get actual balances instead of mock lists
+            try {
+                const res = await fetch('http://127.0.0.1:8000/parent/wards', {
+                    headers: { 'X-User-ID': parent.id }
+                });
+                if (res.ok) {
+                    students = await res.json();
+                }
+            } catch (err) {
+                console.error("Error fetching wards:", err);
+            }
+
+            // Populate selector with fetched wards
+            students.forEach(s => {
                 const option = document.createElement('option');
-                option.value = s.id;
+                option.value = s.student_id;
                 option.textContent = s.name;
-                if (selectedStudent && s.id === selectedStudent.id) {
+                if (selectedStudent && s.student_id == selectedStudent.studentId) {
                     option.selected = true;
                 }
                 studentSelector.appendChild(option);
             });
 
             const renderProfile = async (studentId) => {
-                const student = students.find(s => s.student_id == studentId || s.studentId == studentId);
+                const student = students.find(s => s.student_id == studentId);
                 if (!student) return;
 
                 const formatter = new Intl.NumberFormat('en-IN', {
@@ -298,14 +310,14 @@
                 });
 
                 // Update header info
-                document.getElementById('student-avatar').src = student.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${student.name}`;
+                document.getElementById('student-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${student.name}`;
                 document.getElementById('student-name').textContent = student.name;
-                document.getElementById('student-id-display').textContent = `ID: ${student.student_id || student.studentId}`;
+                document.getElementById('student-id-display').textContent = `ID: ${student.student_id}`;
 
-                // Set real balances from student object
-                document.getElementById('total-balance').textContent = formatter.format(student.total_balance || (student.totalBalance || 0));
-                document.getElementById('spendable-balance').textContent = formatter.format(student.available_balance || (student.availableBalance || 0));
-                document.getElementById('locked-balance').textContent = formatter.format(student.locked_balance || (student.lockedBalance || 0));
+                // Set real balances from the fetched Ward data
+                document.getElementById('total-balance').textContent = formatter.format(student.total_balance || 0);
+                document.getElementById('spendable-balance').textContent = formatter.format(student.available_balance || 0);
+                document.getElementById('locked-balance').textContent = formatter.format(student.locked_balance || 0);
                 document.getElementById('allowed-category').textContent = student.allowed_category || "None";
 
                 const tableBody = document.getElementById('student-activity-body');
@@ -313,7 +325,7 @@
 
                 try {
                     const res = await fetch(`http://127.0.0.1:8000/parent/transactions/${studentId}`, {
-                        headers: { 'X-User-ID': loggedInParent.id }
+                        headers: { 'X-User-ID': parent.id }
                     });
                     if (!res.ok) throw new Error('Network response was not ok');
                     const transactions = await res.json();
@@ -363,9 +375,14 @@
             };
 
             studentSelector.addEventListener('change', (e) => {
-                const student = students.find(s => s.studentId === e.target.value || s.student_id === e.target.value);
+                const student = students.find(s => s.student_id == e.target.value);
                 if (student) {
-                    localStorage.setItem('selectedWard', JSON.stringify(student));
+                    const mappedWard = {
+                        studentId: student.student_id,
+                        studentName: student.name,
+                        walletId: student.wallet_id || `W${student.student_id}`
+                    }
+                    localStorage.setItem('selectedWard', JSON.stringify(mappedWard));
                     renderProfile(e.target.value);
                 }
             });
@@ -397,9 +414,16 @@
 
             // Initial render
             if (selectedStudent) {
-                renderProfile(selectedStudent.student_id || selectedStudent.studentId || selectedStudent.id);
-            } else if (parentWards.length > 0) {
-                renderProfile(parentWards[0].student_id || parentWards[0].studentId || parentWards[0].id);
+                renderProfile(selectedStudent.studentId || selectedStudent.id);
+            } else if (students.length > 0) {
+                // If there's no selected ward set, default to the first one available
+                const firstWard = students[0];
+                localStorage.setItem('selectedWard', JSON.stringify({
+                    studentId: firstWard.student_id,
+                    studentName: firstWard.name,
+                    walletId: firstWard.wallet_id || `W${firstWard.student_id}`
+                }));
+                renderProfile(firstWard.student_id);
             }
         });
     </script>
