@@ -231,7 +231,7 @@ export default function App() {
           };
           localStorage.setItem("user_info", JSON.stringify(userInfo));
           setUser(userInfo);
-          navigate(data.role === 'parent' ? 'parent' : 'home');
+          navigate('home');
         }, 500);
       } catch (err: any) {
         setIsLoggingIn(false);
@@ -251,8 +251,8 @@ export default function App() {
         setTimeout(() => {
           setIsSuccess(true);
           setTimeout(() => {
-            localStorage.setItem("user_id", "3");
-            setUser({ email: "arjun@vit.ac.in", name: "Arjun Kumar", role: "student" });
+            localStorage.setItem("user_id", "4");
+            setUser({ email: "priya@iitm.ac.in", name: "Priya Sharma", role: "student" });
             navigate('home');
           }, 500);
         }, 1200);
@@ -264,8 +264,8 @@ export default function App() {
       setTimeout(() => {
         setIsSuccess(true);
         setTimeout(() => {
-          localStorage.setItem("user_id", "3");
-          setUser({ email: "arjun@vit.ac.in", name: "Arjun Kumar", role: "student" });
+          localStorage.setItem("user_id", "4");
+          setUser({ email: "priya@iitm.ac.in", name: "Priya Sharma", role: "student" });
           navigate('home');
         }, 500);
       }, 1200);

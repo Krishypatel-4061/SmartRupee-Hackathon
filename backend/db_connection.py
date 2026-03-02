@@ -36,6 +36,7 @@ def setup_database():
             name VARCHAR(100) NOT NULL,
             role VARCHAR(50) NOT NULL,
             email VARCHAR(100) UNIQUE,
+            password VARCHAR(255),
             college_name VARCHAR(100),
             year INT,
             major VARCHAR(100),
@@ -113,10 +114,10 @@ def setup_database():
         """)
 
         print("Inserting Mock Data...")
-        cur.execute("INSERT INTO users (user_id, name, role) VALUES (1, 'Vellore Institute of Technology', 'Organization');")
-        cur.execute("INSERT INTO users (user_id, name, role) VALUES (2, 'Ramesh Kumar', 'Parent');")
-        cur.execute("INSERT INTO users (user_id, name, role, linked_parent_id, linked_org_id) VALUES (3, 'Arjun Kumar', 'Student', 2, 1);")
-        cur.execute("INSERT INTO users (user_id, name, role, linked_parent_id, linked_org_id) VALUES (4, 'Priya Sharma', 'Student', NULL, 1);")
+        cur.execute("INSERT INTO users (user_id, name, role, email, password) VALUES (1, 'Vellore Institute of Technology', 'Organization', 'vit@org.in', 'admin123');")
+        cur.execute("INSERT INTO users (user_id, name, role, email, password) VALUES (2, 'Ramesh Kumar', 'Parent', 'ramesh@example.com', 'parent123');")
+        cur.execute("INSERT INTO users (user_id, name, role, email, password, linked_parent_id, linked_org_id) VALUES (3, 'Arjun Kumar', 'Student', 'arjun@iitm.ac.in', 'student123', 2, 1);")
+        cur.execute("INSERT INTO users (user_id, name, role, email, password, linked_parent_id, linked_org_id) VALUES (4, 'Priya Sharma', 'Student', 'priya@iitm.ac.in', 'demo123', NULL, 1);")
         
         cur.execute("INSERT INTO wallets (wallet_id, user_id, total_balance, available_balance, locked_balance) VALUES (1, 3, 5000.00, 2000.00, 3000.00);")
         cur.execute("INSERT INTO wallets (wallet_id, user_id, total_balance, available_balance, locked_balance) VALUES (2, 4, 10000.00, 5000.00, 5000.00);")
