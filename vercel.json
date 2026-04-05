@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "public_html",
+  "installCommand": "echo 'Install handled by build.sh'"
+}
